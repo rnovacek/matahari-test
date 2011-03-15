@@ -1,6 +1,7 @@
 
 from ctypes import Structure, c_double, c_uint64, byref, POINTER, c_char_p
 import subprocess
+import platform
 
 from module import Module, Library
 
@@ -14,55 +15,68 @@ class HostTest(Module):
         self.test("uuid", 
                   self.qmf_object.uuid, 
                   self.dbus_object.uuid,
-                  self.lib_object.host_get_uuid())
+                  self.lib_object.host_get_uuid(),
+                  self.impl_object.uuid())
         self.test("hostname", 
                   self.qmf_object.hostname, 
                   self.dbus_object.hostname,
-                  self.lib_object.host_get_hostname())
+                  self.lib_object.host_get_hostname(),
+                  self.impl_object.hostname())
         self.test("os", 
                   self.qmf_object.os, 
                   self.dbus_object.os,
-                  self.lib_object.host_get_operating_system())
+                  self.lib_object.host_get_operating_system(),
+                  self.impl_object.os())
         self.test("arch", 
                   self.qmf_object.arch, 
                   self.dbus_object.arch,
-                  self.lib_object.host_get_architecture())
+                  self.lib_object.host_get_architecture(),
+                  self.impl_object.arch())
         self.test("wordsize", 
                   self.qmf_object.wordsize, 
                   self.dbus_object.wordsize,
-                  self.lib_object.host_get_cpu_wordsize())
+                  self.lib_object.host_get_cpu_wordsize(),
+                  self.impl_object.wordsize())
         self.test("memory", 
                   self.qmf_object.memory, 
                   self.dbus_object.memory,
-                  self.lib_object.host_get_memory())
+                  self.lib_object.host_get_memory(),
+                  self.impl_object.memory())
         self.test("swap", 
                   self.qmf_object.swap, 
                   self.dbus_object.swap,
-                  self.lib_object.host_get_swap())
+                  self.lib_object.host_get_swap(),
+                  self.impl_object.swap())
         self.test("cpu_count", 
                   self.qmf_object.cpu_count, 
                   self.dbus_object.cpu_count,
-                  self.lib_object.host_get_cpu_count())
+                  self.lib_object.host_get_cpu_count(),
+                  self.impl_object.cpu_count())
         self.test("cpu_cores", 
                   self.qmf_object.cpu_cores, 
                   self.dbus_object.cpu_cores,
-                  self.lib_object.host_get_cpu_number_of_cores())
+                  self.lib_object.host_get_cpu_number_of_cores(),
+                  self.impl_object.cpu_cores())
         self.test("cpu_model", 
                   self.qmf_object.cpu_model, 
                   self.dbus_object.cpu_model,
-                  self.lib_object.host_get_cpu_model())
+                  self.lib_object.host_get_cpu_model(),
+                  self.impl_object.cpu_model())
         self.test("cpu_flags", 
                   self.qmf_object.cpu_flags, 
                   self.dbus_object.cpu_flags,
-                  self.lib_object.host_get_cpu_flags())
+                  self.lib_object.host_get_cpu_flags(),
+                  self.impl_object.cpu_flags())
         self.test("free_mem", 
                   self.qmf_object.free_mem, 
                   self.dbus_object.free_mem,
-                  self.lib_object.host_get_mem_free())
+                  self.lib_object.host_get_mem_free(),
+                  self.impl_object.free_mem())
         self.test("free_swap", 
                   self.qmf_object.free_swap, 
                   self.dbus_object.free_swap,
-                  self.lib_object.host_get_swap_free())
+                  self.lib_object.host_get_swap_free(),
+                  self.impl_object.free_swap())
         for key in self.dbus_object.load.keys():
             self.test("load[%s]" % key, self.qmf_object.load[key], self.dbus_object.load[key])
         for key in self.dbus_object.process_statistics.keys():
@@ -136,23 +150,81 @@ class HostImpl(object):
     def __init__(self):
         pass
 
-    def readFile(self, fileName):
+    def _readFile(self, fileName):
         f = open(fileName)
-        s = f.readline().strip()
+        s = f.readlines()
         f.close()
         return s
 
-    def readOut(self, process):
+    def _readOut(self, process):
         p = subprocess.Popen(process, stdout=subprocess.PIPE)
         return p.communicate()[0].strip()
 
     def uuid(self):
-        return self.readFile('/var/lib/dbus/machine-id')
+        return self._readFile('/var/lib/dbus/machine-id')[0].strip()
         
     def hostname(self):
-        return self.readOut('hostname')
-    
+        return platform.node()
+
+    def os(self):
+        uname = platform.uname()
+        return "%s (%s)" % (uname[0], uname[2])
+
+    def arch(self):
+        return platform.machine()
+
+    def wordsize(self):
+        pass
+
+    def memory(self):
+        s = self._readOut("free")
+        return s.split("\n")[1].split()[1]
+
+    def swap(self):
+        s = self._readOut("free")
+        return s.split("\n")[3].split()[1]
+
+    def cpu_count(self):
+        s = self._readFile("/proc/cpuinfo")
+        processors = 0
+        for line in s:
+            if line.startswith("processor"):
+                processors += 1
+        return processors
+
+    def cpu_cores(self):
+        s = self._readFile("/proc/cpuinfo")
+        cores = 0
+        for line in s:
+            if line.startswith("cpu cores"):
+                cores += int(line.partition(":")[2].strip())
+        return cores
+
+    def cpu_model(self):
+        # TODO: Fix this. It is not universal
+        s = self._readFile("/proc/cpuinfo")
+        for line in s:
+            if line.startswith("model name"):
+                return line.partition(":")[2].split(" ")[2][:-3]
+
+    def cpu_flags(self):
+        s = self._readFile("/proc/cpuinfo")
+        for line in s:
+            if line.startswith("flags"):
+                return line.partition(":")[2].strip()
+
+    def free_mem(self):
+        s = self._readOut("free")
+        return s.split("\n")[1].split()[3]
+
+    def free_swap(self):
+        s = self._readOut("free")
+        return s.split("\n")[3].split()[3]
+
+
 if __name__ == '__main__':
     host = HostImpl()
-    print host.uuid()
-    print host.hostname()
+    
+    for key in dir(host):
+        if key[0] != "_":
+            print key, ":", getattr(host, key)()
