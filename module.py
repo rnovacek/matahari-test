@@ -1,6 +1,7 @@
 
 import ctypes
 import dbus
+import subprocess
 
 class Module(object):
     def __init__(self, qmf_object=None, dbus_object=None, lib_object=None, impl_object=None):
@@ -38,3 +39,14 @@ class DBus(object):
         if name in self.props.keys():
             return self.props[name]
         return self.iface.get_dbus_method(name)
+
+class ImplObject(object):
+    def _readFile(self, fileName):
+        f = open(fileName)
+        s = f.readlines()
+        f.close()
+        return s
+
+    def _readOut(self, process):
+        p = subprocess.Popen(process, stdout=subprocess.PIPE)
+        return p.communicate()[0].strip()

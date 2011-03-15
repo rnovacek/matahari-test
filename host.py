@@ -1,9 +1,8 @@
 
 from ctypes import Structure, c_double, c_uint64, byref, POINTER, c_char_p
-import subprocess
 import platform
 
-from module import Module, Library
+from module import Module, Library, ImplObject
 
 
 class HostTest(Module):
@@ -146,19 +145,9 @@ class HostLib(Library):
     def __getattr__(self, name):
         return getattr(self.lib, name)
 
-class HostImpl(object):
+class HostImpl(ImplObject):
     def __init__(self):
         pass
-
-    def _readFile(self, fileName):
-        f = open(fileName)
-        s = f.readlines()
-        f.close()
-        return s
-
-    def _readOut(self, process):
-        p = subprocess.Popen(process, stdout=subprocess.PIPE)
-        return p.communicate()[0].strip()
 
     def uuid(self):
         return self._readFile('/var/lib/dbus/machine-id')[0].strip()
