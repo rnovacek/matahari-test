@@ -1,7 +1,8 @@
 #!/usr/bin/python
 
 import sys
-from qmf.console import Session
+import qmf2
+import cqpid
 from module import DBus
 import dbus
 
@@ -12,35 +13,39 @@ from services import ServicesTest, ServicesLib
 MATAHARI_PACKAGE = 'org.matahariproject'
 
 if len(sys.argv) < 2:
-    broker = "localhost:5672"
+    broker = "localhost:49000"
 else:
     broker = sys.argv[1]
 
-### QMF
+### QMF connection
 
 print "Creating session...",
 sys.stdout.flush()
-session = Session()
-session.addBroker(broker)
+connection = cqpid.Connection(broker)
+connection.open()
+session = qmf2.ConsoleSession(connection)
+session.open()
 print " DONE"
 
-if MATAHARI_PACKAGE not in session.getPackages():
-    print "No Matahari agent seems to be running"
-    session.close()
-    sys.exit(1)
+### QMF agents
 
-### QMF
+qmf_host = qmf_network = qmf_services = None
+for agent in session.getAgents():
+    tokens = agent.getName().split(":")
+    if len(tokens) >= 2 and tokens[0] == MATAHARI_PACKAGE:
+        if tokens[1] == "host":
+            qmf_host = agent
+        elif tokens[1] == "net":
+            qmf_network = agent
+        elif tokens[1] == "service":
+            qmf_services = agent
 
-def getQMF(_class):
-    try:
-        return session.getObjects(_class=_class, _package=MATAHARI_PACKAGE)[0]
-    except Exception as e:
-        print "Unable to create QMF object (%s). QMF tests of %s module will be disabled." % (e.message, _class)
-        return None
-        
-qmf_host = getQMF('host')
-qmf_network = getQMF('network')
-qmf_services = getQMF('services')
+if qmf_host is None:
+    print "Unable to create host QMF object. Tests of QMF part of host module will be disabled."
+if qmf_network is None:
+    print "Unable to create network QMF object. Tests of QMF part of network module will be disabled."
+if qmf_services is None:
+    print "Unable to create services QMF object. Tests of QMF part of services module will be disabled."
 
 ### DBus
 

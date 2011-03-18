@@ -1,5 +1,5 @@
 
-from module import Module, Library
+from module import Module, Library, ImplObject
 
 class ServicesTest(Module):
     def __init__(self, qmf_object=None, dbus_object=None, lib_object=None, impl_object=None):
