@@ -40,6 +40,25 @@ class DBus(object):
             return self.props[name]
         return self.iface.get_dbus_method(name)
 
+class QMF(object):
+    def __init__(self, agent, class_):
+        self.agent = agent
+        data = self.agent.query("{'class': '%s'}" % class_)
+        if len(data) == 0:
+            print "Query returned no data for class: %s" % class_
+            self = None
+            return
+        self.data = data[0]
+        
+        self.props = self.data.getProperties()
+
+    
+    def __getattr__(self, name):
+        if name in self.props.keys():
+            return self.props[name]
+        #TODO: Methods
+        pass
+
 class ImplObject(object):
     def _readFile(self, fileName):
         f = open(fileName)

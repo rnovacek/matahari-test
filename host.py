@@ -11,75 +11,84 @@ class HostTest(Module):
 
     def check(self):
         print "Module HOST"
+        print self.qmf_object.uuid
+        print self.dbus_object.uuid
+        print self.lib_object.host_get_uuid()
+        print self.impl_object.uuid()
+        
         self.test("uuid", 
-                  self.qmf_object.uuid, 
-                  self.dbus_object.uuid,
-                  self.lib_object.host_get_uuid(),
-                  self.impl_object.uuid())
+                  self.qmf_object and self.qmf_object.uuid, 
+                  self.dbus_object and self.dbus_object.uuid,
+                  self.lib_object and self.lib_object.host_get_uuid(),
+                  self.impl_object and self.impl_object.uuid())
         self.test("hostname", 
-                  self.qmf_object.hostname, 
-                  self.dbus_object.hostname,
-                  self.lib_object.host_get_hostname(),
-                  self.impl_object.hostname())
+                  self.qmf_object and self.qmf_object.hostname, 
+                  self.dbus_object and self.dbus_object.hostname,
+                  self.lib_object and self.lib_object.host_get_hostname(),
+                  self.impl_object and self.impl_object.hostname())
         self.test("os", 
-                  self.qmf_object.os, 
-                  self.dbus_object.os,
-                  self.lib_object.host_get_operating_system(),
-                  self.impl_object.os())
+                  self.qmf_object and self.qmf_object.os, 
+                  self.dbus_object and self.dbus_object.os,
+                  self.lib_object and self.lib_object.host_get_operating_system(),
+                  self.impl_object and self.impl_object.os())
         self.test("arch", 
-                  self.qmf_object.arch, 
-                  self.dbus_object.arch,
-                  self.lib_object.host_get_architecture(),
-                  self.impl_object.arch())
+                  self.qmf_object and self.qmf_object.arch, 
+                  self.dbus_object and self.dbus_object.arch,
+                  self.lib_object and self.lib_object.host_get_architecture(),
+                  self.impl_object and self.impl_object.arch())
         self.test("wordsize", 
-                  self.qmf_object.wordsize, 
-                  self.dbus_object.wordsize,
-                  self.lib_object.host_get_cpu_wordsize(),
-                  self.impl_object.wordsize())
+                  self.qmf_object and self.qmf_object.wordsize, 
+                  self.dbus_object and self.dbus_object.wordsize,
+                  self.lib_object and self.lib_object.host_get_cpu_wordsize(),
+                  self.impl_object and self.impl_object.wordsize())
         self.test("memory", 
-                  self.qmf_object.memory, 
-                  self.dbus_object.memory,
-                  self.lib_object.host_get_memory(),
-                  self.impl_object.memory())
+                  self.qmf_object and self.qmf_object.memory, 
+                  self.dbus_object and self.dbus_object.memory,
+                  self.lib_object and self.lib_object.host_get_memory(),
+                  self.impl_object and self.impl_object.memory())
         self.test("swap", 
-                  self.qmf_object.swap, 
-                  self.dbus_object.swap,
-                  self.lib_object.host_get_swap(),
-                  self.impl_object.swap())
+                  self.qmf_object and self.qmf_object.swap, 
+                  self.dbus_object and self.dbus_object.swap,
+                  self.lib_object and self.lib_object.host_get_swap(),
+                  self.impl_object and self.impl_object.swap())
         self.test("cpu_count", 
-                  self.qmf_object.cpu_count, 
-                  self.dbus_object.cpu_count,
-                  self.lib_object.host_get_cpu_count(),
-                  self.impl_object.cpu_count())
+                  self.qmf_object and self.qmf_object.cpu_count, 
+                  self.dbus_object and self.dbus_object.cpu_count,
+                  self.lib_object and self.lib_object.host_get_cpu_count(),
+                  self.impl_object and self.impl_object.cpu_count())
         self.test("cpu_cores", 
-                  self.qmf_object.cpu_cores, 
-                  self.dbus_object.cpu_cores,
-                  self.lib_object.host_get_cpu_number_of_cores(),
-                  self.impl_object.cpu_cores())
+                  self.qmf_object and self.qmf_object.cpu_cores, 
+                  self.dbus_object and self.dbus_object.cpu_cores,
+                  self.lib_object and self.lib_object.host_get_cpu_number_of_cores(),
+                  self.impl_object and self.impl_object.cpu_cores())
         self.test("cpu_model", 
-                  self.qmf_object.cpu_model, 
-                  self.dbus_object.cpu_model,
-                  self.lib_object.host_get_cpu_model(),
-                  self.impl_object.cpu_model())
+                  self.qmf_object and self.qmf_object.cpu_model, 
+                  self.dbus_object and self.dbus_object.cpu_model,
+                  self.lib_object and self.lib_object.host_get_cpu_model(),
+                  self.impl_object and self.impl_object.cpu_model())
         self.test("cpu_flags", 
-                  self.qmf_object.cpu_flags, 
-                  self.dbus_object.cpu_flags,
-                  self.lib_object.host_get_cpu_flags(),
-                  self.impl_object.cpu_flags())
+                  self.qmf_object and self.qmf_object.cpu_flags, 
+                  self.dbus_object and self.dbus_object.cpu_flags,
+                  self.lib_object and self.lib_object.host_get_cpu_flags(),
+                  self.impl_object and self.impl_object.cpu_flags())
         self.test("free_mem", 
-                  self.qmf_object.free_mem, 
-                  self.dbus_object.free_mem,
-                  self.lib_object.host_get_mem_free(),
-                  self.impl_object.free_mem())
+                  self.qmf_object and self.qmf_object.free_mem, 
+                  self.dbus_object and self.dbus_object.free_mem,
+                  self.lib_object and self.lib_object.host_get_mem_free(),
+                  self.impl_object and self.impl_object.free_mem())
         self.test("free_swap", 
-                  self.qmf_object.free_swap, 
-                  self.dbus_object.free_swap,
-                  self.lib_object.host_get_swap_free(),
-                  self.impl_object.free_swap())
+                  self.qmf_object and self.qmf_object.free_swap, 
+                  self.dbus_object and self.dbus_object.free_swap,
+                  self.lib_object and self.lib_object.host_get_swap_free(),
+                  self.impl_object and self.impl_object.free_swap())
         for key in self.dbus_object.load.keys():
-            self.test("load[%s]" % key, self.qmf_object.load[key], self.dbus_object.load[key])
+            self.test("load[%s]" % key, 
+                      self.qmf_object and self.qmf_object.load[key], 
+                      self.dbus_object and self.dbus_object.load[key])
         for key in self.dbus_object.process_statistics.keys():
-            self.test("process_statistics[%s]" % key, self.qmf_object.process_statistics[key], self.dbus_object.process_statistics[key])
+            self.test("process_statistics[%s]" % key, 
+                      self.qmf_object and self.qmf_object.process_statistics[key],
+                      self.dbus_object and self.dbus_object.process_statistics[key])
 
   
 class HostLib(Library):

@@ -3,14 +3,14 @@
 import sys
 import qmf2
 import cqpid
-from module import DBus
+from module import DBus, QMF
 import dbus
 
-from host import HostTest, HostLib
-from network import NetworkTest, NetworkLib
-from services import ServicesTest, ServicesLib
+from host import HostTest, HostLib, HostImpl
+from network import NetworkTest, NetworkLib, NetworkImpl
+from services import ServicesTest, ServicesLib, ServicesImpl
 
-MATAHARI_PACKAGE = 'org.matahariproject'
+MATAHARI_PACKAGE = 'matahariproject.org'
 
 if len(sys.argv) < 2:
     broker = "localhost:49000"
@@ -25,27 +25,8 @@ connection = cqpid.Connection(broker)
 connection.open()
 session = qmf2.ConsoleSession(connection)
 session.open()
+session.setAgentFilter("[]")
 print " DONE"
-
-### QMF agents
-
-qmf_host = qmf_network = qmf_services = None
-for agent in session.getAgents():
-    tokens = agent.getName().split(":")
-    if len(tokens) >= 2 and tokens[0] == MATAHARI_PACKAGE:
-        if tokens[1] == "host":
-            qmf_host = agent
-        elif tokens[1] == "net":
-            qmf_network = agent
-        elif tokens[1] == "service":
-            qmf_services = agent
-
-if qmf_host is None:
-    print "Unable to create host QMF object. Tests of QMF part of host module will be disabled."
-if qmf_network is None:
-    print "Unable to create network QMF object. Tests of QMF part of network module will be disabled."
-if qmf_services is None:
-    print "Unable to create services QMF object. Tests of QMF part of services module will be disabled."
 
 ### DBus
 
@@ -85,9 +66,31 @@ lib_host = getLib(HostLib, "libmhost.so")
 lib_network = getLib(NetworkLib, "libmnet.so")
 lib_services = getLib(ServicesLib, "libmsrv.so")
 
-modules = (HostTest(qmf_host, dbus_host, lib_host),
-           ServicesTest(qmf_services, dbus_services, lib_services),
-           NetworkTest(qmf_network, dbus_network, lib_network)
+
+### QMF agents
+
+qmf_host = qmf_network = qmf_services = None
+for agent in session.getAgents():
+    tokens = agent.getName().split(":")
+    if len(tokens) >= 2 and tokens[0] == MATAHARI_PACKAGE:
+        if tokens[1] == "host":
+            qmf_host = QMF(agent, 'host')
+        elif tokens[1] == "net":
+            qmf_network = QMF(agent, 'network')
+        elif tokens[1] == "service":
+            qmf_services = QMF(agent, 'services')
+
+if qmf_host is None:
+    print "Unable to create host QMF object. Tests of QMF part of host module will be disabled."
+if qmf_network is None:
+    print "Unable to create network QMF object. Tests of QMF part of network module will be disabled."
+if qmf_services is None:
+    print "Unable to create services QMF object. Tests of QMF part of services module will be disabled."
+
+
+modules = (HostTest(qmf_host, dbus_host, lib_host, HostImpl()),
+           #ServicesTest(qmf_services, dbus_services, lib_services, ServicesImpl()),
+           #NetworkTest(qmf_network, dbus_network, lib_network, NetworkImpl())
           )
 
 for module in modules:

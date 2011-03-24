@@ -7,6 +7,8 @@ class ServicesTest(Module):
     
     def check(self):
         print "Module SERVICES"
+        if self.qmf_object is None or self.dbus_object is None:
+            return
         dbus_list = self.dbus_object.list()
         qmf_list = self.qmf_object.list().outArgs['services']
         self.test("list[len]", len(qmf_list), len(dbus_list))
@@ -23,3 +25,7 @@ class ServicesLib(Library):
 
     def __getattr__(self, name):
         return getattr(self.lib, name)
+
+class ServicesImpl(ImplObject):
+    def __init__(self):
+        pass
