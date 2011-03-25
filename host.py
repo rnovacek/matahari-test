@@ -11,10 +11,6 @@ class HostTest(Module):
 
     def check(self):
         print "Module HOST"
-        print self.qmf_object.uuid
-        print self.dbus_object.uuid
-        print self.lib_object.host_get_uuid()
-        print self.impl_object.uuid()
         
         self.test("uuid", 
                   self.qmf_object and self.qmf_object.uuid, 
@@ -172,15 +168,16 @@ class HostImpl(ImplObject):
         return platform.machine()
 
     def wordsize(self):
+        print "Wordsize not implemented"
         pass
 
     def memory(self):
         s = self._readOut("free")
-        return s.split("\n")[1].split()[1]
+        return int(s.split("\n")[1].split()[1])
 
     def swap(self):
         s = self._readOut("free")
-        return s.split("\n")[3].split()[1]
+        return int(s.split("\n")[3].split()[1])
 
     def cpu_count(self):
         s = self._readFile("/proc/cpuinfo")
@@ -213,11 +210,11 @@ class HostImpl(ImplObject):
 
     def free_mem(self):
         s = self._readOut("free")
-        return s.split("\n")[1].split()[3]
+        return int(s.split("\n")[1].split()[3])
 
     def free_swap(self):
         s = self._readOut("free")
-        return s.split("\n")[3].split()[3]
+        return int(s.split("\n")[3].split()[3])
 
 
 if __name__ == '__main__':

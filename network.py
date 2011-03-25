@@ -8,7 +8,7 @@ class NetworkTest(Module):
     def check(self):
         print "Module NETWORK"
         dbus_list = self.dbus_object.list()
-        qmf_list = self.qmf_object.list().outArgs['iface_map']
+        qmf_list = self.qmf_object.list()['iface_map']
         self.test("list[len]", len(qmf_list), len(dbus_list))
         for i in range(len(dbus_list)):
             self.test("list[%d]" % i,
@@ -16,13 +16,13 @@ class NetworkTest(Module):
                       qmf_list[i])
             self.test("mac[%d]" % i,
                       self.dbus_object.get_mac_address(dbus_list[i]),
-                      self.qmf_object.get_mac_address(qmf_list[i]).outArgs['mac'])
+                      self.qmf_object.get_mac_address(qmf_list[i])['mac'])
             self.test("ip[%d]" % i,
                       self.dbus_object.get_ip_address(dbus_list[i]),
-                      self.qmf_object.get_ip_address(qmf_list[i]).outArgs['ip'])
+                      self.qmf_object.get_ip_address(qmf_list[i])['ip'])
             self.test("status[%d]" % i,
                       self.dbus_object.status(dbus_list[i]),
-                      self.qmf_object.status(qmf_list[i]).outArgs['status'])
+                      self.qmf_object.status(qmf_list[i])['status'])
             # TODO: start and stop
 
 class NetworkLib(Library):

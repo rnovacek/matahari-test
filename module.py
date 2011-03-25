@@ -9,7 +9,7 @@ class Module(object):
         self.dbus_object = dbus_object
         self.lib_object = lib_object
         self.impl_object = impl_object
-    
+
     def check(self):
         raise NotImplementedError("Method test must be implemented in subclass")
 
@@ -23,7 +23,13 @@ class Module(object):
         value = vals[0]
         for v in vals[1:]:
             if v != value:
-                print "Test %s failed (" % name, value, "!=", v, ")"
+                self.failed(name, values)
+
+    def failed(self, name, values):
+        print "Test %s failed | " % name,
+        for value in values:
+            print "%s | " % value,
+        print
 
 class Library(object):
     def __init__(self, lib):
@@ -34,7 +40,7 @@ class DBus(object):
     def __init__(self, obj, iface):
         self.iface = dbus.Interface(obj, dbus_interface=iface)
         self.props = dbus.Interface(obj, dbus_interface='org.freedesktop.DBus.Properties').GetAll(iface)
-    
+
     def __getattr__(self, name):
         if name in self.props.keys():
             return self.props[name]
@@ -49,15 +55,20 @@ class QMF(object):
             self = None
             return
         self.data = data[0]
-        
+
+        # This should be done automatically, but isn't
+        self.data._schema = self.agent.getSchema(self.data.getSchemaId())
+
         self.props = self.data.getProperties()
 
-    
     def __getattr__(self, name):
+        # Parameters
         if name in self.props.keys():
             return self.props[name]
-        #TODO: Methods
-        pass
+        # Methods
+        def func(*args):
+            return self.data._invoke(name, args, {'timeout_':10})
+        return func
 
 class ImplObject(object):
     def _readFile(self, fileName):

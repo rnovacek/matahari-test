@@ -10,13 +10,13 @@ class ServicesTest(Module):
         if self.qmf_object is None or self.dbus_object is None:
             return
         dbus_list = self.dbus_object.list()
-        qmf_list = self.qmf_object.list().outArgs['services']
+        qmf_list = self.qmf_object.list()['services']
         self.test("list[len]", len(qmf_list), len(dbus_list))
         for i in range(len(dbus_list)):
             self.test("list[%d]" % i, dbus_list[i], qmf_list[i])
             # Testing takes too long, so only first few services will be tested
             if i < 5:
-                self.test("status[%i]" % i, self.dbus_object.status(dbus_list[i], 0, 1), self.qmf_object.status(qmf_list[i], 0, 1).outArgs['rc'])
+                self.test("status[%i]" % i, self.dbus_object.status(dbus_list[i], 0, 1), self.qmf_object.status(qmf_list[i], 0, 1)['rc'])
         # TODO: start and stop
 
 class ServicesLib(Library):

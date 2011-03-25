@@ -89,8 +89,8 @@ if qmf_services is None:
 
 
 modules = (HostTest(qmf_host, dbus_host, lib_host, HostImpl()),
-           #ServicesTest(qmf_services, dbus_services, lib_services, ServicesImpl()),
-           #NetworkTest(qmf_network, dbus_network, lib_network, NetworkImpl())
+           ServicesTest(qmf_services, dbus_services, lib_services, ServicesImpl()),
+           NetworkTest(qmf_network, dbus_network, lib_network, NetworkImpl())
           )
 
 for module in modules:
