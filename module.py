@@ -47,9 +47,10 @@ class DBus(object):
         return self.iface.get_dbus_method(name)
 
 class QMF(object):
+    props = dict()
     def __init__(self, agent, class_):
         self.agent = agent
-        data = self.agent.query("{'class': '%s'}" % class_)
+        data = self.agent.query("{class: '%s', package:'org.matahariproject'}" % class_)
         if len(data) == 0:
             print "Query returned no data for class: %s" % class_
             self = None

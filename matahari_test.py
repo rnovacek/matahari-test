@@ -74,11 +74,11 @@ for agent in session.getAgents():
     tokens = agent.getName().split(":")
     if len(tokens) >= 2 and tokens[0] == MATAHARI_PACKAGE:
         if tokens[1] == "host":
-            qmf_host = QMF(agent, 'host')
+            qmf_host = QMF(agent, 'Host')
         elif tokens[1] == "net":
-            qmf_network = QMF(agent, 'network')
+            qmf_network = QMF(agent, 'Network')
         elif tokens[1] == "service":
-            qmf_services = QMF(agent, 'services')
+            qmf_services = QMF(agent, 'Services')
 
 if qmf_host is None:
     print "Unable to create host QMF object. Tests of QMF part of host module will be disabled."
