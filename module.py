@@ -49,8 +49,9 @@ class DBus(object):
 class QMF(object):
     props = dict()
     def __init__(self, agent, class_):
+        agent.loadSchemaInfo()
         self.agent = agent
-        data = self.agent.query("{class: '%s', package:'org.matahariproject'}" % class_)
+        data = self.agent.query("{class: '%s', package:'%s'}" % (class_, agent.getPackages()[0]))
         if len(data) == 0:
             print "Query returned no data for class: %s" % class_
             self = None
