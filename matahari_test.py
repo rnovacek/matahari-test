@@ -75,7 +75,7 @@ for agent in session.getAgents():
     if len(tokens) >= 2 and tokens[0] == MATAHARI_PACKAGE:
         if tokens[1] == "host":
             qmf_host = QMF(agent, 'Host')
-        elif tokens[1] == "net":
+        elif tokens[1] == "Network":
             qmf_network = QMF(agent, 'Network')
         elif tokens[1] == "service":
             qmf_services = QMF(agent, 'Services')
